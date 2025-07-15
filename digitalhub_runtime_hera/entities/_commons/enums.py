@@ -12,10 +12,10 @@ class EntityKinds(Enum):
     Entity kinds.
     """
 
-    WORKFLOW_HERA = "kfp"
-    TASK_HERA_PIPELINE = "kfp+pipeline"
-    TASK_HERA_BUILD = "kfp+build"
-    RUN_HERA = "kfp+run"
+    WORKFLOW_HERA = "hera"
+    TASK_HERA_PIPELINE = "hera+pipeline"
+    TASK_HERA_BUILD = "hera+build"
+    RUN_HERA = "hera+run"
 
 
 class TaskActions(Enum):
