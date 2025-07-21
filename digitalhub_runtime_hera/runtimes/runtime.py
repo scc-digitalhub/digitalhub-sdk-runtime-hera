@@ -70,13 +70,6 @@ class RuntimeHera(Runtime):
 
         LOGGER.info("Collecting inputs.")
         workflow_args = self._collect_inputs(spec)
-        workflow_args = {
-            "di": "store://top-secret-projectz/dataitem/table/di:b44c2990d72a4c33aefeb7dda0ecb02d",
-            "p": "aa",
-            "col": "hghgh",
-            "func1": "store://top-secret-projectz/function/python/func:d49357f92064422aaa170549bad57e02",
-            "func2": "store://top-secret-projectz/function/python/func:d49357f92064422aaa170549bad57e02",
-        }
 
         LOGGER.info("Configure execution.")
         hera_workflow: Callable = self._configure_execution(spec)
