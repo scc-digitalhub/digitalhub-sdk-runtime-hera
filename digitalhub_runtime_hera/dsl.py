@@ -71,7 +71,7 @@ def oai_step(
             raise RuntimeError("Either function or workflow must be provided.")
     except Exception as e:
         raise RuntimeError("Function or workflow not found.") from e
-    args.extend(["--entity", str(exec_entity.id)])
+    args.extend(["--entity", str(exec_entity.key)])
 
     # Add kwargs
     if kwargs is None:
