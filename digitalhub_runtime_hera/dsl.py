@@ -12,28 +12,53 @@ from digitalhub.entities.function.crud import get_function
 from digitalhub.entities.workflow.crud import get_workflow
 from digitalhub.runtimes.enums import RuntimeEnvVar
 from digitalhub.stores.credentials.enums import CredsEnvVar
-from hera.workflows import Artifact, Container, Parameter
+from hera.workflows import DAG, Artifact, Container, Parameter, Steps, Task
 from hera.workflows import models as m
+from hera.workflows._context import _context
 
 
-def oai_step(
-    action: str,
+def dag_op(**step_kwargs):
+    arguments = step_kwargs.pop("arguments", None)
+    inner_ctx = _context.pieces[-1]
+    if not isinstance(_context.pieces[-1], DAG):
+        raise ValueError("step() can only be called inside a DAG")
+    _context.pieces = _context.pieces[:-1]
+    container = container_op(**step_kwargs)
+    _context.pieces.append(inner_ctx)
+    name = "dag-op-" + step_kwargs.get("name", "") + "-" + uuid4().hex
+    return Task(name=name, template=container, arguments=arguments)
+
+
+def step_op(**step_kwargs):
+    arguments = step_kwargs.pop("arguments", None)
+    inner_ctx = _context.pieces[-1]
+    if not isinstance(_context.pieces[-1], Steps):
+        raise ValueError("step() can only be called inside a Steps")
+    _context.pieces = _context.pieces[:-1]
+    container = container_op(**step_kwargs)
+    _context.pieces.append(inner_ctx)
+    name = "step-op-" + step_kwargs.get("name", "") + "-" + uuid4().hex
+    return Task(name=name, template=container, arguments=arguments)
+
+
+def container_op(
+    template: dict,
     function: str | None = None,
     function_id: str | None = None,
     workflow: str | None = None,
     workflow_id: str | None = None,
-    step_name: str | None = None,
-    step_outputs: list | None = None,
-    step_inputs: list | None = None,
+    name: str | None = None,
+    inputs: list | None = None,
+    outputs: list | None = None,
     **kwargs,
 ) -> None:
     """
-    Create a Hera step as container.
+    Create a Hera container template.
 
     Parameters
     ----------
-    action : str
-        Action to execute.
+    template : dict
+        Parameters template to pass to function.run() or workflow.run().
     function : str
         Function name.
     function_id : str
@@ -42,19 +67,17 @@ def oai_step(
         Workflow name.
     workflow_id : str
         Workflow ID.
-    step_name : str
+    name : str
         Step name.
-    step_outputs : list
-        Step outputs.
-    step_inputs : list
+    inputs : list
         Step inputs.
-    kwargs : dict
-        Execution parameters.
+    outputs : list
+        Step outputs.
 
     Returns
     -------
     Container
-        Hera container.
+        Hera container template.
     """
 
     cmd = ["python"]
@@ -74,11 +97,8 @@ def oai_step(
     args.extend(["--entity", str(exec_entity.key)])
 
     # Add kwargs
-    if kwargs is None:
-        kwargs = {}
-    kwargs["action"] = action
-    kwargs["wait"] = True
-    args.extend(["--kwargs", json.dumps(kwargs)])
+    template["wait"] = True
+    args.extend(["--kwargs", json.dumps(template, cls=PipelineParamEncoder)])
 
     # Get image stepper
     image = os.environ.get(CredsEnvVar.DHCORE_WORKFLOW_IMAGE.value)
@@ -86,25 +106,32 @@ def oai_step(
         raise RuntimeError(f"Env var '{CredsEnvVar.DHCORE_WORKFLOW_IMAGE.value}' is not set")
 
     # Get step outputs
-    outputs = None
-    if step_outputs is not None:
-        outputs = []
-        for o in step_outputs:
-            path = "/tmp/entity_" + str(o).replace(".", "_").replace("/", "_")
-            outputs.append(Parameter(name=o, value_from=m.ValueFrom(path=path), output=True))
-            outputs.append(Artifact(name=o, path=path))
+    outputs = outputs if outputs is not None else []
+    step_outputs = []
+    for o in outputs:
+        path = "/tmp/entity_" + str(o).replace(".", "_").replace("/", "_")
+        step_outputs.append(Artifact(name=o, path=path))
+        step_outputs.append(Parameter(name=o, value_from=m.ValueFrom(path=path), output=True))
 
     # Get step inputs
-    inputs = None if step_inputs is None else [Parameter(name=i) for i in step_inputs]
+    inputs = inputs if inputs is not None else []
+    step_inputs = [Parameter(name=i) for i in inputs]
 
     # Get step name
-    name = step_name if step_name is not None else uuid4().hex
+    name = name if name is not None else uuid4().hex
 
     return Container(
         name=name,
         image=image,
         command=cmd,
         args=args,
-        outputs=outputs,
-        inputs=inputs,
+        outputs=step_outputs,
+        inputs=step_inputs,
     )
+
+
+class PipelineParamEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, Parameter):
+            return obj.value
+        return super().default(obj)

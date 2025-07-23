@@ -4,13 +4,14 @@
 
 from __future__ import annotations
 
+from inspect import signature
 from typing import Callable
 
 from digitalhub.utils.generic_utils import encode_string
 from hera.workflows import Workflow
 
 
-def run_hera_build(pipeline: Callable, workflow_parameters: dict) -> dict:
+def run_hera_build(pipeline: Callable, *args, **kwargs) -> dict:
     """
     Build Hera pipeline as YAML.
 
@@ -24,6 +25,9 @@ def run_hera_build(pipeline: Callable, workflow_parameters: dict) -> dict:
     dict
         Pipeline spec.
     """
+    workflow_parameters = {}
+    for param in signature(pipeline).parameters.values():
+        workflow_parameters[param.name] = r"{{inputs.parameters." + param.name + r"}}"
     workflow = pipeline(**workflow_parameters)
     if not isinstance(workflow, Workflow):
         raise TypeError(f"Expected Hera Workflow, got {type(workflow)}. Your function must return a Hera Workflow.")
