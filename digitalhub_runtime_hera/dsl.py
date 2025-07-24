@@ -17,27 +17,20 @@ from hera.workflows import models as m
 from hera.workflows._context import _context
 
 
-def dag_op(**step_kwargs):
-    arguments = step_kwargs.pop("arguments", None)
+
+def step(**step_kwargs):
+    arguments = step_kwargs.pop("parameters", None)
     inner_ctx = _context.pieces[-1]
-    if not isinstance(_context.pieces[-1], DAG):
-        raise ValueError("step() can only be called inside a DAG")
+    if isinstance(inner_ctx, DAG):
+        op_type = "dag-op-"
+    elif isinstance(inner_ctx, Steps):
+        op_type = "step-op-"
+    else:
+        raise ValueError("step() can only be called inside a DAG or Steps")
     _context.pieces = _context.pieces[:-1]
     container = container_op(**step_kwargs)
     _context.pieces.append(inner_ctx)
-    name = "dag-op-" + step_kwargs.get("name", "") + "-" + uuid4().hex
-    return Task(name=name, template=container, arguments=arguments)
-
-
-def step_op(**step_kwargs):
-    arguments = step_kwargs.pop("arguments", None)
-    inner_ctx = _context.pieces[-1]
-    if not isinstance(_context.pieces[-1], Steps):
-        raise ValueError("step() can only be called inside a Steps")
-    _context.pieces = _context.pieces[:-1]
-    container = container_op(**step_kwargs)
-    _context.pieces.append(inner_ctx)
-    name = "step-op-" + step_kwargs.get("name", "") + "-" + uuid4().hex
+    name = op_type + step_kwargs.get("name", "") + "-" + uuid4().hex
     return Task(name=name, template=container, arguments=arguments)
 
 
