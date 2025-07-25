@@ -17,7 +17,6 @@ from hera.workflows import models as m
 from hera.workflows._context import _context
 
 
-
 def step(**step_kwargs):
     arguments = step_kwargs.pop("parameters", None)
     inner_ctx = _context.pieces[-1]
