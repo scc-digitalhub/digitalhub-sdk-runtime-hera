@@ -25,10 +25,9 @@ def run_hera_build(pipeline: Callable, *args, **kwargs) -> dict:
     dict
         Pipeline spec.
     """
-    workflow_parameters = {}
-    for param in signature(pipeline).parameters.values():
-        workflow_parameters[param.name] = r"{{inputs.parameters." + param.name + r"}}"
-    workflow = pipeline(**workflow_parameters)
+    if dict(signature(pipeline).parameters):
+        raise RuntimeError(f"Function {pipeline.__name__} must not have arguments.")
+    workflow = pipeline()
     if not isinstance(workflow, Workflow):
-        raise TypeError(f"Expected Hera Workflow, got {type(workflow)}. Your function must return a Hera Workflow.")
+        raise RuntimeError(f"Expected Hera Workflow, got {type(workflow)}. Your function must return a Hera Workflow.")
     return {"workflow": encode_string(workflow.to_yaml())}

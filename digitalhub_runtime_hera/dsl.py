@@ -17,8 +17,20 @@ from hera.workflows import models as m
 from hera.workflows._context import _context
 
 
-def step(**step_kwargs):
-    arguments = step_kwargs.pop("parameters", None)
+def step(**step_kwargs) -> Task:
+    """
+    Create a step from a container template and function name.
+
+    Parameters
+    ----------
+    step_kwargs : dict
+        Keyword arguments for the container template.
+
+    Returns
+    -------
+    Task
+        Hera task.
+    """
     inner_ctx = _context.pieces[-1]
     if isinstance(inner_ctx, DAG):
         op_type = "dag-op-"
@@ -27,13 +39,18 @@ def step(**step_kwargs):
     else:
         raise ValueError("step() can only be called inside a DAG or Steps")
     _context.pieces = _context.pieces[:-1]
-    container = container_op(**step_kwargs)
+
+    inputs = step_kwargs.pop("inputs", None)
+    if inputs is not None:
+        step_kwargs["inputs"] = [k for k in inputs.keys()]
+    container = container_template(**step_kwargs)
+
     _context.pieces.append(inner_ctx)
     name = op_type + step_kwargs.get("name", "") + "-" + uuid4().hex
-    return Task(name=name, template=container, arguments=arguments)
+    return Task(name=name, template=container, arguments=inputs)
 
 
-def container_op(
+def container_template(
     template: dict,
     function: str | None = None,
     function_id: str | None = None,
