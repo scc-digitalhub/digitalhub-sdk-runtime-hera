@@ -23,13 +23,20 @@ def step(**step_kwargs) -> Task:
 
     Parameters
     ----------
-    step_kwargs : dict
-        Keyword arguments for the container template.
+    **step_kwargs : dict
+        Keyword arguments for the container template. Accepts inputs, name,
+        function, workflow, and other parameters for task configuration.
 
     Returns
     -------
     Task
-        Hera task.
+        A Hera task object configured with the specified container template
+        and parameters.
+
+    Raises
+    ------
+    ValueError
+        If called outside of a DAG or Steps context.
     """
     inner_ctx = _context.pieces[-1]
     if isinstance(inner_ctx, DAG):
@@ -46,7 +53,15 @@ def step(**step_kwargs) -> Task:
     container = container_template(**step_kwargs)
 
     _context.pieces.append(inner_ctx)
-    name = op_type + step_kwargs.get("name", "") + "-" + uuid4().hex
+
+    name = op_type
+    if (kwarg_name := step_kwargs.get("name")) is not None:
+        name += kwarg_name + "-"
+    elif (func := step_kwargs.get("function")) is not None:
+        name += func + "-"
+    elif (wkfl := step_kwargs.get("workflow")) is not None:
+        name += wkfl + "-"
+    name += uuid4().hex[:8]
     return Task(name=name, template=container, arguments=inputs)
 
 
@@ -60,33 +75,43 @@ def container_template(
     inputs: list | None = None,
     outputs: list | None = None,
     **kwargs,
-) -> None:
+) -> Container:
     """
-    Create a Hera container template.
+    Create a Hera container template for workflow execution.
 
     Parameters
     ----------
     template : dict
         Parameters template to pass to function.run() or workflow.run().
-    function : str
-        Function name.
-    function_id : str
-        Function ID.
-    workflow : str
-        Workflow name.
-    workflow_id : str
-        Workflow ID.
-    name : str
-        Step name.
-    inputs : list
-        Step inputs.
-    outputs : list
-        Step outputs.
+    function : str, optional
+        Function name to execute.
+    function_id : str, optional
+        Unique identifier for the function.
+    workflow : str, optional
+        Workflow name to execute.
+    workflow_id : str, optional
+        Unique identifier for the workflow.
+    name : str, optional
+        Custom name for the step.
+    inputs : list, optional
+        List of input parameter names for the step.
+    outputs : list, optional
+        List of output parameter names for the step.
+    **kwargs
+        Additional keyword arguments passed to the container configuration.
 
     Returns
     -------
     Container
-        Hera container template.
+        A Hera container template configured with the specified entity,
+        inputs, outputs, and execution parameters.
+
+    Raises
+    ------
+    RuntimeError
+        If neither function nor workflow is provided, if the specified
+        entity is not found, or if the workflow image environment
+        variable is not set.
     """
 
     cmd = ["python"]
@@ -127,10 +152,13 @@ def container_template(
     step_inputs = [Parameter(name=i) for i in inputs]
 
     # Get step name
-    name = name if name is not None else uuid4().hex
+    cont_name = "container-"
+    if name is not None:
+        cont_name += name + "-"
+    cont_name += exec_entity.name + "-" + str(uuid4().hex[:8])
 
     return Container(
-        name=name,
+        name=cont_name,
         image=image,
         command=cmd,
         args=args,
@@ -140,7 +168,28 @@ def container_template(
 
 
 class PipelineParamEncoder(json.JSONEncoder):
+    """
+    Custom JSON encoder for pipeline parameters.
+
+    Extends json.JSONEncoder to handle Parameter objects by encoding
+    their value attribute instead of the full object.
+    """
+
     def default(self, obj):
+        """
+        Override default method to handle Parameter objects.
+
+        Parameters
+        ----------
+        obj : any
+            Object to encode.
+
+        Returns
+        -------
+        any
+            The object's value if it's a Parameter, otherwise defers
+            to the parent class default method.
+        """
         if isinstance(obj, Parameter):
             return obj.value
         return super().default(obj)
