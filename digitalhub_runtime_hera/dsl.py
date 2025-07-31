@@ -12,7 +12,7 @@ from digitalhub.entities.function.crud import get_function
 from digitalhub.entities.workflow.crud import get_workflow
 from digitalhub.runtimes.enums import RuntimeEnvVar
 from digitalhub.stores.credentials.enums import CredsEnvVar
-from hera.workflows import DAG, Artifact, Container, Parameter, Steps, Task
+from hera.workflows import DAG, Artifact, Container, Parameter, Steps, Task, Step
 from hera.workflows import models as m
 from hera.workflows._context import _context
 
@@ -62,7 +62,11 @@ def step(**step_kwargs) -> Task:
     elif (wkfl := step_kwargs.get("workflow")) is not None:
         name += wkfl + "-"
     name += uuid4().hex[:8]
-    return Task(name=name, template=container, arguments=inputs)
+
+    # If the inner context is a DAG, return a Task; otherwise, return a Step
+    if isinstance(inner_ctx, DAG):
+        return Task(name=name, template=container, arguments=inputs)
+    return Step(name=name, template=container, arguments=inputs)
 
 
 def container_template(
