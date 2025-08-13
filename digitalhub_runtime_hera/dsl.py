@@ -12,7 +12,7 @@ from digitalhub.entities.function.crud import get_function
 from digitalhub.entities.workflow.crud import get_workflow
 from digitalhub.runtimes.enums import RuntimeEnvVar
 from digitalhub.stores.credentials.enums import CredsEnvVar
-from hera.workflows import DAG, Artifact, Container, Parameter, Steps, Task, Step
+from hera.workflows import DAG, Artifact, Container, Parameter, Step, Steps, Task
 from hera.workflows import models as m
 from hera.workflows._context import _context
 
