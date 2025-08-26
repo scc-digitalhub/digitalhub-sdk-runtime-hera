@@ -12,8 +12,8 @@ from digitalhub.entities.run._base.entity import Run
 if typing.TYPE_CHECKING:
     from digitalhub.entities._base.entity.metadata import Metadata
 
-    from digitalhub_runtime_hera.entities.run.hera_run.spec import RunSpecHeraRun
-    from digitalhub_runtime_hera.entities.run.hera_run.status import RunStatusHeraRun
+    from digitalhub_runtime_hera.entities.run._base.spec import RunSpecHeraRun
+    from digitalhub_runtime_hera.entities.run._base.status import RunStatusHeraRun
 
 
 class RunHeraRun(Run):

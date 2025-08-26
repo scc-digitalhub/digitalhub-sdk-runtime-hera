@@ -8,9 +8,9 @@ from digitalhub.entities.task._base.builder import TaskBuilder
 
 from digitalhub_runtime_hera.entities._base.runtime_entity.builder import RuntimeEntityBuilderHera
 from digitalhub_runtime_hera.entities._commons.enums import EntityKinds
-from digitalhub_runtime_hera.entities.task.hera_pipeline.entity import TaskHeraPipeline
-from digitalhub_runtime_hera.entities.task.hera_pipeline.spec import TaskSpecHeraPipeline, TaskValidatorHeraPipeline
-from digitalhub_runtime_hera.entities.task.hera_pipeline.status import TaskStatusHeraPipeline
+from digitalhub_runtime_hera.entities.task.pipeline.entity import TaskHeraPipeline
+from digitalhub_runtime_hera.entities.task.pipeline.spec import TaskSpecHeraPipeline, TaskValidatorHeraPipeline
+from digitalhub_runtime_hera.entities.task.pipeline.status import TaskStatusHeraPipeline
 
 
 class TaskHeraPipelineBuilder(TaskBuilder, RuntimeEntityBuilderHera):

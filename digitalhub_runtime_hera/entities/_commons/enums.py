@@ -15,10 +15,11 @@ class EntityKinds(Enum):
     WORKFLOW_HERA = "hera"
     TASK_HERA_PIPELINE = "hera+pipeline"
     TASK_HERA_BUILD = "hera+build"
-    RUN_HERA = "hera+run"
+    RUN_HERA_PIPELINE = "hera+pipeline:run"
+    RUN_HERA_BUILD = "hera+build:run"
 
 
-class TaskActions(Enum):
+class Actions(Enum):
     """
     Task actions.
     """

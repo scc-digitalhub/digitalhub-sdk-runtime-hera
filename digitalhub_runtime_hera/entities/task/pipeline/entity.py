@@ -11,8 +11,8 @@ from digitalhub.entities.task._base.entity import Task
 if typing.TYPE_CHECKING:
     from digitalhub.entities._base.entity.metadata import Metadata
 
-    from digitalhub_runtime_hera.entities.task.hera_pipeline.spec import TaskSpecHeraPipeline
-    from digitalhub_runtime_hera.entities.task.hera_pipeline.status import TaskStatusHeraPipeline
+    from digitalhub_runtime_hera.entities.task.pipeline.spec import TaskSpecHeraPipeline
+    from digitalhub_runtime_hera.entities.task.pipeline.status import TaskStatusHeraPipeline
 
 
 class TaskHeraPipeline(Task):
