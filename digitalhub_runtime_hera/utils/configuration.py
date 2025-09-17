@@ -138,6 +138,8 @@ def get_hera_pipeline(name: str, source: Path, handler: str) -> Callable:
         Hera pipeline.
     """
     try:
+        if ":" in handler:
+            handler = handler.split(":")[-1]
         return import_function(source, handler)
     except Exception as e:
         msg = f"Error getting '{name}' Hera pipeline. Exception: {e.__class__}. Error: {e.args}"
