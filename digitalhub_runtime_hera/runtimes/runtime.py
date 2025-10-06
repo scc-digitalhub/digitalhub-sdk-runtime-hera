@@ -131,7 +131,7 @@ class RuntimeHera(Runtime):
     # Configuration
     ##############################
 
-    def _configure_execution(self, spec: dict):
+    def _configure_execution(self, spec: dict) -> Callable:
         """
         Create Hera pipeline and prepare parameters.
 
@@ -142,8 +142,8 @@ class RuntimeHera(Runtime):
 
         Returns
         -------
-        tuple
-            Hera pipeline to execute and parameters.
+        Callable
+            Hera pipeline function.
         """
         # Setup function source and specs
         LOGGER.info("Getting workflow source, specs and pipeline.")
@@ -165,9 +165,5 @@ class RuntimeHera(Runtime):
     def _cleanup(self) -> None:
         """
         Cleanup root folder.
-
-        Returns
-        -------
-        None
         """
         shutil.rmtree(self.runtime_dir, ignore_errors=True)

@@ -39,10 +39,6 @@ class RunHeraRun(Run):
     def _setup_execution(self) -> None:
         """
         Setup run execution.
-
-        Returns
-        -------
-        None
         """
 
     def result(self, result_name: str) -> Any:
