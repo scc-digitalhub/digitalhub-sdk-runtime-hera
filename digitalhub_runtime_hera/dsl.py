@@ -8,6 +8,7 @@ import json
 import os
 from uuid import uuid4
 
+import slugify
 from digitalhub.entities.function.crud import get_function
 from digitalhub.entities.workflow.crud import get_workflow
 from digitalhub.runtimes.enums import RuntimeEnvVar
@@ -62,6 +63,7 @@ def step(**step_kwargs) -> Task:
     elif (wkfl := step_kwargs.get("workflow")) is not None:
         name += wkfl + "-"
     name += uuid4().hex[:8]
+    name = slugify.slugify(name, lowercase=True, separator="-")[:63]
 
     # If the inner context is a DAG, return a Task; otherwise, return a Step
     if isinstance(inner_ctx, DAG):
@@ -160,6 +162,7 @@ def container_template(
     if name is not None:
         cont_name += name + "-"
     cont_name += exec_entity.name + "-" + str(uuid4().hex[:8])
+    cont_name = slugify.slugify(cont_name, lowercase=True, separator="-")[:63]
 
     return Container(
         name=cont_name,
