@@ -10,7 +10,6 @@ from uuid import uuid4
 
 import slugify
 from digitalhub.entities.function.crud import get_function
-from digitalhub.entities.workflow.crud import get_workflow
 from digitalhub.runtimes.enums import RuntimeEnvVar
 from digitalhub.stores.credentials.enums import CredsEnvVar
 from hera.workflows import DAG, Artifact, Container, Parameter, Step, Steps, Task
@@ -60,8 +59,6 @@ def step(**step_kwargs) -> Task:
         name += kwarg_name + "-"
     elif (func := step_kwargs.get("function")) is not None:
         name += func + "-"
-    elif (wkfl := step_kwargs.get("workflow")) is not None:
-        name += wkfl + "-"
     name += uuid4().hex[:8]
     name = slugify.slugify(name, lowercase=True, separator="-")[:63]
 
@@ -73,10 +70,8 @@ def step(**step_kwargs) -> Task:
 
 def container_template(
     template: dict,
-    function: str | None = None,
+    function: str,
     function_id: str | None = None,
-    workflow: str | None = None,
-    workflow_id: str | None = None,
     name: str | None = None,
     inputs: list | None = None,
     outputs: list | None = None,
@@ -88,23 +83,17 @@ def container_template(
     Parameters
     ----------
     template : dict
-        Parameters template to pass to function.run() or workflow.run().
-    function : str, optional
+        Parameters template to pass to function.run().
+    function : str
         Function name to execute.
-    function_id : str, optional
+    function_id : str
         Unique identifier for the function.
-    workflow : str, optional
-        Workflow name to execute.
-    workflow_id : str, optional
-        Unique identifier for the workflow.
-    name : str, optional
+    name : str
         Custom name for the step.
-    inputs : list, optional
+    inputs : list
         List of input parameter names for the step.
-    outputs : list, optional
+    outputs : list
         List of output parameter names for the step.
-    **kwargs
-        Additional keyword arguments passed to the container configuration.
 
     Returns
     -------
@@ -123,21 +112,15 @@ def container_template(
     cmd = ["python"]
     args = ["step.py"]
 
-    # Add entity
+    # Add function
     try:
         project = os.environ.get(RuntimeEnvVar.PROJECT.value)
-        if function is not None:
-            exec_entity = get_function(function, project=project, entity_id=function_id)
-        elif workflow is not None:
-            exec_entity = get_workflow(workflow, project=project, entity_id=workflow_id)
-        else:
-            raise RuntimeError("Either function or workflow must be provided.")
+        exec_entity = get_function(function, project=project, entity_id=function_id)
     except Exception as e:
         raise RuntimeError("Function or workflow not found.") from e
     args.extend(["--entity", str(exec_entity.key)])
 
     # Add kwargs
-    template["wait"] = True
     args.extend(["--kwargs", json.dumps(template, cls=PipelineParamEncoder)])
 
     # Get image stepper
