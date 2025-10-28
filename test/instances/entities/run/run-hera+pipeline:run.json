@@ -15,7 +15,6 @@
     "spec": {
       "outputs": {},
       "image": "debian",
-
       "task": "hera+pipeline://demo-etl/77fcf9d1-3fb6-4117-9cba-e500f1223e59",
       "inputs": {
         "di": "store://demo-etl/dataitem/dataitem/dataitem1:fd83dqa7vnh-73e45-m3pqawew"

@@ -4,6 +4,8 @@
 
 from __future__ import annotations
 
+from typing import Optional
+
 from digitalhub.entities.workflow._base.spec import WorkflowSpec, WorkflowValidator
 
 from digitalhub_runtime_hera.entities.workflow.hera.models import BuildValidator, SourceValidator
@@ -19,12 +21,16 @@ class WorkflowSpecHera(WorkflowSpec):
         source: dict | None = None,
         build: dict | None = None,
         workflow: str | None = None,
+        image: str | None = None,
+        tag: str | None = None,
     ) -> None:
         super().__init__()
 
         self.source = source
         self.build = build
         self.workflow = workflow
+        self.image = image
+        self.tag = tag
 
 
 class WorkflowValidatorHera(WorkflowValidator):
@@ -40,3 +46,7 @@ class WorkflowValidatorHera(WorkflowValidator):
 
     workflow: str = None
     """YAML of the Workflow."""
+
+    # NOT USED
+    image: Optional[str] = None
+    tag: Optional[str] = None
