@@ -4,14 +4,18 @@
 
 from __future__ import annotations
 
-import importlib.util as imputil
 import typing
 from pathlib import Path
 from typing import Callable
 
 from digitalhub.entities.workflow.crud import get_workflow
 from digitalhub.stores.data.api import get_store
-from digitalhub.utils.generic_utils import decode_base64_string, extract_archive, requests_chunk_download
+from digitalhub.utils.generic_utils import (
+    decode_base64_string,
+    extract_archive,
+    import_function,
+    requests_chunk_download,
+)
 from digitalhub.utils.git_utils import clone_repository
 from digitalhub.utils.logger import LOGGER
 from digitalhub.utils.uri_utils import (
@@ -25,6 +29,167 @@ from digitalhub.utils.uri_utils import (
 if typing.TYPE_CHECKING:
     from digitalhub.entities.workflow._base.entity import Workflow
 
+DEFAULT_PY_FILE = "main.py"
+
+
+def _parse_workflow_string(workflow_string: str) -> tuple[str, str, str]:
+    """
+    Parse workflow string into project, name, and UUID.
+
+    Parameters
+    ----------
+    workflow_string : str
+        Workflow string in format 'workflow://project/name:uuid'.
+
+    Returns
+    -------
+    tuple[str, str, str]
+        Project, name, and UUID.
+    """
+    splitted = workflow_string.split("://")[1].split("/")
+    name, uuid = splitted[1].split(":")
+    return splitted[0], name, uuid
+
+
+def _get_workflow_file_path(path: Path, handler: str) -> Path:
+    """
+    Get workflow file path from handler.
+
+    Parameters
+    ----------
+    path : Path
+        Root path where the workflow source is located.
+    handler : str
+        Workflow handler.
+
+    Returns
+    -------
+    Path
+        Path to the workflow Python file.
+    """
+    if ":" in handler:
+        handler_parts = handler.split(":")[0].split(".")
+        return Path(path, *handler_parts).with_suffix(".py")
+    return path.with_suffix(".py")
+
+
+def _extract_handler_function_name(handler: str) -> str:
+    """
+    Extract function name from handler string.
+
+    Parameters
+    ----------
+    handler : str
+        Handler string.
+
+    Returns
+    -------
+    str
+        Function name.
+    """
+    if ":" in handler:
+        return handler.split(":")[-1]
+    return handler
+
+
+def _download_and_extract_archive(source: str, path: Path) -> None:
+    """
+    Download and extract an archive from a URL or S3.
+
+    Parameters
+    ----------
+    source : str
+        Source URL (with zip+ scheme).
+    path : Path
+        Destination path.
+    """
+    clean_source = source.removeprefix("zip+")
+    filename = path / get_filename_from_uri(source)
+
+    if has_s3_scheme(clean_source):
+        store = get_store(clean_source)
+        store.get_s3_source(source, filename)
+    else:
+        requests_chunk_download(clean_source, filename)
+
+    extract_archive(path, filename)
+    filename.unlink()
+
+
+def _save_base64_source(path: Path, base64_content: str) -> Path:
+    """
+    Save base64-encoded source to file.
+
+    Parameters
+    ----------
+    path : Path
+        Destination directory.
+    base64_content : str
+        Base64-encoded source code.
+
+    Returns
+    -------
+    Path
+        Path to the saved file (directory/main.py).
+    """
+    path.mkdir(parents=True, exist_ok=True)
+    file_path = path / DEFAULT_PY_FILE
+    file_path.write_text(decode_base64_string(base64_content))
+    return file_path
+
+
+def _download_remote_source(path: Path, source: str) -> None:
+    """
+    Download source from remote URL (http/https).
+
+    Parameters
+    ----------
+    path : Path
+        Destination directory.
+    source : str
+        Remote source URL.
+    """
+    path.mkdir(parents=True, exist_ok=True)
+
+    if has_zip_scheme(source):
+        _download_and_extract_archive(source, path)
+    else:
+        filename = path / get_filename_from_uri(source)
+        requests_chunk_download(source, filename)
+
+
+def _download_s3_source(path: Path, source: str) -> None:
+    """
+    Download source from S3.
+
+    Parameters
+    ----------
+    path : Path
+        Destination directory.
+    source : str
+        S3 source URL (must be zip+s3:// scheme).
+    """
+    if not has_zip_scheme(source):
+        raise RuntimeError("S3 source must be a zip file with scheme zip+s3://.")
+
+    path.mkdir(parents=True, exist_ok=True)
+    _download_and_extract_archive(source, path)
+
+
+def _clone_git_source(path: Path, source: str) -> None:
+    """
+    Clone git repository.
+
+    Parameters
+    ----------
+    path : Path
+        Destination directory.
+    source : str
+        Git repository URL.
+    """
+    path.mkdir(parents=True, exist_ok=True)
+    clone_repository(path, source)
+
 
 def get_dhcore_workflow(workflow_string: str) -> Workflow:
     """
@@ -33,18 +198,17 @@ def get_dhcore_workflow(workflow_string: str) -> Workflow:
     Parameters
     ----------
     workflow_string : str
-        Function string.
+        Workflow string in format 'workflow://project/name:uuid'.
 
     Returns
     -------
     Workflow
         DHCore workflow.
     """
-    splitted = workflow_string.split("://")[1].split("/")
-    name, uuid = splitted[1].split(":")
+    project, name, uuid = _parse_workflow_string(workflow_string)
     LOGGER.info(f"Getting workflow {name}:{uuid}.")
     try:
-        return get_workflow(name, project=splitted[0], entity_id=uuid)
+        return get_workflow(name, project=project, entity_id=uuid)
     except Exception as e:
         msg = f"Error getting workflow {name}:{uuid}. Exception: {e.__class__}. Error: {e.args}"
         LOGGER.exception(msg)
@@ -53,7 +217,7 @@ def get_dhcore_workflow(workflow_string: str) -> Workflow:
 
 def save_workflow_source(path: Path, source_spec: dict) -> Path:
     """
-    Save workflow source.
+    Save workflow source from various sources.
 
     Parameters
     ----------
@@ -65,115 +229,55 @@ def save_workflow_source(path: Path, source_spec: dict) -> Path:
     Returns
     -------
     Path
-        Path to the workflow source.
+        Path to the workflow Python file.
     """
-    # Prepare path
-    path.mkdir(parents=True, exist_ok=True)
-
-    # Get relevant information
     base64 = source_spec.get("base64")
     source = source_spec.get("source")
     handler: str = source_spec["handler"]
 
-    # Base64
+    # Base64-encoded source
     if base64 is not None:
-        base64_path = path / "main.py"
-        base64_path.write_text(decode_base64_string(base64))
-        return base64_path
+        return _save_base64_source(path, base64)
 
     if source is None:
-        raise RuntimeError("Function source not found in spec.")
+        raise RuntimeError("Workflow source not found in spec.")
 
-    # Git repo
+    # Download source based on scheme
     if has_git_scheme(source):
-        clone_repository(path, source)
-
-    # Http(s) or s3 presigned urls
+        _clone_git_source(path, source)
     elif has_remote_scheme(source):
-        filename = path / get_filename_from_uri(source)
-        if has_zip_scheme(source):
-            requests_chunk_download(source.removeprefix("zip+"), filename)
-            extract_archive(path, filename)
-            filename.unlink()
-        else:
-            requests_chunk_download(source, filename)
-
-    # S3 path
+        _download_remote_source(path, source)
     elif has_s3_scheme(source):
-        if not has_zip_scheme(source):
-            raise RuntimeError("S3 source must be a zip file with scheme zip+s3://.")
-        filename = path / get_filename_from_uri(source)
-        store = get_store(source.removeprefix("zip+"))
-        store.get_s3_source(source, filename)
-        extract_archive(path, filename)
-        filename.unlink()
-
-    # Unsupported scheme
+        _download_s3_source(path, source)
     else:
-        raise RuntimeError("Unable to collect source.")
+        raise RuntimeError(f"Unable to collect source from: {source}")
 
-    if ":" in handler:
-        handler_parts = handler.split(":")[0].split(".")
-        return Path(path, *handler_parts).with_suffix(".py")
-    else:
-        return path.with_suffix(".py")
+    # Return path to the workflow file
+    return _get_workflow_file_path(path, handler)
 
 
 def get_hera_pipeline(name: str, source: Path, handler: str) -> Callable:
     """
-    Get Hera pipeline.
+    Get Hera pipeline by importing it from source.
 
     Parameters
     ----------
     name : str
         Name of the workflow.
-    source : str
-        Source of the workflow.
+    source : Path
+        Path to the workflow source file.
     handler : str
         Handler of the workflow.
 
     Returns
     -------
     Callable
-        Hera pipeline.
+        Hera pipeline function.
     """
     try:
-        if ":" in handler:
-            handler = handler.split(":")[-1]
-        return import_function(source, handler)
+        function_name = _extract_handler_function_name(handler)
+        return import_function(source, function_name)
     except Exception as e:
         msg = f"Error getting '{name}' Hera pipeline. Exception: {e.__class__}. Error: {e.args}"
         LOGGER.exception(msg)
         raise RuntimeError(msg) from e
-
-
-def import_function(path: Path, handler: str) -> Callable:
-    """
-    Import a function from a module.
-
-    Parameters
-    ----------
-    path : Path
-        Path where the function source is located.
-    handler : str
-        Function name.
-
-    Returns
-    -------
-    Callable
-        Function.
-    """
-    spec = imputil.spec_from_file_location(path.stem, path)
-    if spec is None:
-        raise RuntimeError(f"Error loading function source from {str(path)}.")
-
-    mod = imputil.module_from_spec(spec)
-    if spec.loader is None:
-        raise RuntimeError(f"Error getting module loader from {str(path)}.")
-
-    spec.loader.exec_module(mod)
-    func = getattr(mod, handler)
-    if not callable(func):
-        raise RuntimeError(f"Handler '{handler}' is not a callable.")
-
-    return func
