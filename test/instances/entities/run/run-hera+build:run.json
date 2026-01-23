@@ -15,6 +15,9 @@
   "spec": {
     "task": "hera+build://demo-etl/8ed8dd0a-379d-40dd-9a68-0c765d6b143e",
     "workflow": "hera://demo-etl/workflow1:77fcf9d1-3fb6-4117-9cba-e500f1223e59",
+    "inputs": {},
+    "outputs": {},
+    "parameters": {},
     "source": {
       "source": "main.py",
       "handler": "pipeline",
