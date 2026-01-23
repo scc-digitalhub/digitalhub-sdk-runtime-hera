@@ -1,0 +1,68 @@
+{
+  "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "key": "store://demo-etl/run/hera+build:run/a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "kind": "hera+build:run",
+  "metadata": {
+    "name": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "updated_by": "digitalhubdev",
+    "project": "demo-etl",
+    "updated": "2024-11-20T11:15:27.947Z",
+    "created_by": "digitalhubdev",
+    "created": "2024-11-20T11:14:18.679Z"
+  },
+  "name": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "project": "demo-etl",
+  "spec": {
+    "task": "hera+build://demo-etl/8ed8dd0a-379d-40dd-9a68-0c765d6b143e",
+    "workflow": "hera://demo-etl/workflow1:77fcf9d1-3fb6-4117-9cba-e500f1223e59",
+    "source": {
+      "source": "main.py",
+      "handler": "pipeline",
+      "base64": "ZnJvbSBkaWdpdGFsaHViX3J1bnRpbWVfa2ZwLmRzbCBpbXBvcnQgcGlwZWxpbmVfY29udGV4dAoKZGVmIHBpcGVsaW5lKHVybCk6CiAgICB3aXRoIHBpcGVsaW5lX2NvbnRleHQoKSBhcyBwYzoKICAgICAgICAKICAgICAgICBzMV9kYXRhc2V0ID0gcGMuc3RlcChuYW1lPSJkb3dubG9hZCIsCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgZnVuY3Rpb249ImRvd25sb2FkZXItZnVuY3QiLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgIGFjdGlvbj0iam9iIiwKICAgICAgICAgICAgICAgICAgICAgICAgICAgICBpbnB1dHM9eyJ1cmwiOiB1cmx9LAogICAgICAgICAgICAgICAgICAgICAgICAgICAgIG91dHB1dHM9eyJkYXRhc2V0IjogImRhdGFzZXQifSkKICAgICAgICAKICAgICAgICBzMl9wYXJraW5nID0gcGMuc3RlcChuYW1lPSJleHRyYWN0X3BhcmtpbmciLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgIGZ1bmN0aW9uPSJleHRyYWN0LXBhcmtpbmdzIiwKICAgICAgICAgICAgICAgICAgICAgICAgICAgICBhY3Rpb249ImpvYiIsCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgaW5wdXRzPXsiZGkiOiBzMV9kYXRhc2V0Lm91dHB1dHNbJ2RhdGFzZXQnXX0sCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgb3V0cHV0cz17InBhcmtpbmdzIjogInBhcmtpbmdzIn0pCiAgICAgICAgCiAgICAgICAgczNfYWdncmVnYXRlID0gcGMuc3RlcChuYW1lPSJhZ2dyZWdhdGUiLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgZnVuY3Rpb249ImFnZ3JlZ2F0ZS1wYXJraW5ncyIsCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBhY3Rpb249ImpvYiIsCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBpbnB1dHM9eyJkaSI6IHMxX2RhdGFzZXQub3V0cHV0c1snZGF0YXNldCddfSwKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIG91dHB1dHM9eyJwYXJraW5nX2RhdGFfYWdncmVnYXRlZCI6ICJwYXJraW5nX2RhdGFfYWdncmVnYXRlZCJ9KQogICAgICAgIAogICAgICAgIHM0X3RvX2RiID0gcGMuc3RlcChuYW1lPSJ0b19kYiIsIAogICAgICAgICAgICAgICAgICAgICAgICAgICBmdW5jdGlvbj0idG8tZGIiLAogICAgICAgICAgICAgICAgICAgICAgICAgICBhY3Rpb249ImpvYiIsCiAgICAgICAgICAgICAgICAgICAgICAgICAgIGlucHV0cz17ImFnZ19kaSI6IHMzX2FnZ3JlZ2F0ZS5vdXRwdXRzWydwYXJraW5nX2RhdGFfYWdncmVnYXRlZCddLCAicGFya2luZ3NfZGkiOiBzMV9kYXRhc2V0Lm91dHB1dHNbJ2RhdGFzZXQnXX0sCiAgICAgICAgICAgICAgICAgICAgICAgICAgIG91dHB1dHM9e30p",
+      "lang": "python"
+    },
+    "build": {
+      "target_image": "demo-etl-workflow:latest",
+      "base_image": "python:3.11-slim"
+    },
+    "profile": "default",
+    "local_execution": false,
+    "resources": {
+      "cpu": "2",
+      "mem": "2Gi"
+    },
+    "envs": [
+      {
+        "name": "BUILD_ENV",
+        "value": "production"
+      }
+    ],
+    "secrets": ["docker-registry"],
+    "volumes": [
+      {
+        "name": "volume1",
+        "volume_type": "empty_dir",
+        "mount_path": "/workspace"
+      }
+    ]
+  },
+  "status": {
+    "state": "COMPLETED",
+    "transitions": [
+      {
+        "status": "COMPLETED",
+        "time": "2024-11-20T11:15:27.874388072Z"
+      },
+      {
+        "status": "RUNNING",
+        "message": "job j-herabuild-a1b2c3d4-e5f6-7890-abcd-ef1234567890 created",
+        "time": "2024-11-20T11:14:18.747933828Z"
+      },
+      {
+        "status": "READY",
+        "time": "2024-11-20T11:14:18.69615452Z"
+      }
+    ]
+  },
+  "user": "digitalhubdev"
+}
