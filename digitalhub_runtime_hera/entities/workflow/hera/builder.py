@@ -72,8 +72,6 @@ class WorkflowHeraBuilder(WorkflowBuilder, RuntimeEntityBuilderHera):
 
         Parameters
         ----------
-        entity : str
-            Entity type.
         obj : dict
             Dictionary to parse.
 
