@@ -9,7 +9,6 @@ import typing
 from digitalhub_runtime_hera.entities.run._base.entity import RunHeraRun
 
 if typing.TYPE_CHECKING:
-
     from digitalhub_runtime_hera.entities.run.pipeline.spec import RunSpecHeraRunPipeline
     from digitalhub_runtime_hera.entities.run.pipeline.status import RunStatusHeraRunPipeline
 

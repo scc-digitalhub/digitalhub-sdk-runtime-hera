@@ -10,7 +10,6 @@ from typing import Any
 from digitalhub.entities.run._base.entity import Run
 
 if typing.TYPE_CHECKING:
-
     from digitalhub_runtime_hera.entities.run._base.spec import RunSpecHeraRun
     from digitalhub_runtime_hera.entities.run._base.status import RunStatusHeraRun
 
