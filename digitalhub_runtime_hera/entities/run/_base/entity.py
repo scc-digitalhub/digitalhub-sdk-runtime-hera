@@ -10,7 +10,6 @@ from typing import Any
 from digitalhub.entities.run._base.entity import Run
 
 if typing.TYPE_CHECKING:
-    from digitalhub.entities._base.metadata.entity import Metadata
 
     from digitalhub_runtime_hera.entities.run._base.spec import RunSpecHeraRun
     from digitalhub_runtime_hera.entities.run._base.status import RunStatusHeraRun
@@ -21,17 +20,8 @@ class RunHeraRun(Run):
     RunHeraRun class.
     """
 
-    def __init__(
-        self,
-        project: str,
-        uuid: str,
-        kind: str,
-        metadata: Metadata,
-        spec: RunSpecHeraRun,
-        status: RunStatusHeraRun,
-        user: str | None = None,
-    ) -> None:
-        super().__init__(project, uuid, kind, metadata, spec, status, user)
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
 
         self.spec: RunSpecHeraRun
         self.status: RunStatusHeraRun
