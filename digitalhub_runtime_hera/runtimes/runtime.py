@@ -28,30 +28,6 @@ class RuntimeHera(Runtime):
         self.runtime_dir = ctx.root / "runtime_hera"
         self.runtime_dir.mkdir(parents=True, exist_ok=True)
 
-    def build(self, workflow: dict, task: dict, run: dict) -> dict:
-        """
-        Build run spec.
-
-        Parameters
-        ----------
-        workflow : dict
-            The workflow.
-        task : dict
-            The task.
-        run : dict
-            The run.
-
-        Returns
-        -------
-        dict
-            The run spec.
-        """
-        return {
-            **workflow.get("spec", {}),
-            **task.get("spec", {}),
-            **run.get("spec", {}),
-        }
-
     def run(self, run: dict) -> dict:
         """
         Run workflow.
