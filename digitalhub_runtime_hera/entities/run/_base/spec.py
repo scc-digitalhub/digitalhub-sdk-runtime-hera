@@ -23,8 +23,6 @@ class RunSpecHeraRun(RunSpec):
         source: dict | None = None,
         build: dict | None = None,
         parameters: dict | None = None,
-        inputs: dict | None = None,
-        outputs: dict | None = None,
         **kwargs,
     ) -> None:
         super().__init__(
@@ -41,8 +39,6 @@ class RunSpecHeraRun(RunSpec):
         self.source = source
         self.build = build
         self.parameters = parameters
-        self.inputs = inputs
-        self.outputs = outputs
 
 
 class RunValidatorHeraRun(RunValidator):
@@ -54,7 +50,3 @@ class RunValidatorHeraRun(RunValidator):
 
     # Run parameters
     parameters: dict = None
-
-    # NOT USED
-    inputs: dict = None
-    outputs: dict = None
