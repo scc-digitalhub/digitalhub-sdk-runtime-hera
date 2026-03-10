@@ -17,7 +17,7 @@ from digitalhub.utils.generic_utils import (
     requests_chunk_download,
 )
 from digitalhub.utils.git_utils import clone_repository
-from digitalhub.utils.logger import LOGGER
+from digitalhub.utils.logger.logger import get_logger
 from digitalhub.utils.uri_utils import (
     get_filename_from_uri,
     has_git_scheme,
@@ -29,6 +29,7 @@ from digitalhub.utils.uri_utils import (
 if typing.TYPE_CHECKING:
     from digitalhub.entities.workflow._base.entity import Workflow
 
+logger = get_logger(__file__)
 DEFAULT_PY_FILE = "main.py"
 
 
@@ -206,12 +207,12 @@ def get_dhcore_workflow(workflow_string: str) -> Workflow:
         DHCore workflow.
     """
     project, name, uuid = _parse_workflow_string(workflow_string)
-    LOGGER.info(f"Getting workflow {name}:{uuid}.")
+    logger.info(f"Getting workflow {name}:{uuid}.")
     try:
         return get_workflow(name, project=project, entity_id=uuid)
     except Exception as e:
         msg = f"Error getting workflow {name}:{uuid}. Exception: {e.__class__}. Error: {e.args}"
-        LOGGER.exception(msg)
+        logger.exception(msg)
         raise RuntimeError(msg) from e
 
 
@@ -279,5 +280,5 @@ def get_hera_pipeline(name: str, source: Path, handler: str) -> Callable:
         return import_function(source, function_name)
     except Exception as e:
         msg = f"Error getting '{name}' Hera pipeline. Exception: {e.__class__}. Error: {e.args}"
-        LOGGER.exception(msg)
+        logger.exception(msg)
         raise RuntimeError(msg) from e

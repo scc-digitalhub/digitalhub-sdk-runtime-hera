@@ -9,12 +9,14 @@ from typing import Callable
 
 from digitalhub.context.api import get_context
 from digitalhub.runtimes._base import Runtime
-from digitalhub.utils.logger import LOGGER
+from digitalhub.utils.logger.logger import get_logger
 
 from digitalhub_runtime_hera.entities._commons.enums import Actions
 from digitalhub_runtime_hera.utils.configuration import get_dhcore_workflow, get_hera_pipeline, save_workflow_source
 from digitalhub_runtime_hera.utils.functions import run_hera_build
 from digitalhub_runtime_hera.utils.outputs import build_status
+
+logger = get_logger(__file__)
 
 
 class RuntimeHera(Runtime):
@@ -37,29 +39,29 @@ class RuntimeHera(Runtime):
         dict
             Status of the executed run.
         """
-        LOGGER.info("Validating task.")
+        logger.info("Validating task.")
         action = self._validate_task(run)
         executable: Callable = self._get_executable(action)
 
-        LOGGER.info(f"Starting task {action}.")
+        logger.info(f"Starting task {action}.")
         spec = run.get("spec")
 
-        LOGGER.info("Collecting inputs.")
+        logger.info("Collecting inputs.")
         workflow_args = self._collect_inputs(spec)
 
-        LOGGER.info("Configure execution.")
+        logger.info("Configure execution.")
         hera_workflow: Callable = self._configure_execution(spec)
 
-        LOGGER.info("Executing workflow.")
+        logger.info("Executing workflow.")
         results = self._execute(executable, hera_workflow, workflow_args)
 
-        LOGGER.info("Collecting outputs.")
+        logger.info("Collecting outputs.")
         status = build_status(results)
 
-        LOGGER.info("Cleanup")
+        logger.info("Cleanup")
         self._cleanup()
 
-        LOGGER.info("Task completed, returning run status.")
+        logger.info("Task completed, returning run status.")
         return status
 
     @staticmethod
@@ -100,7 +102,7 @@ class RuntimeHera(Runtime):
         dict
             Parameters.
         """
-        LOGGER.info("Getting parameters.")
+        logger.info("Getting parameters.")
         return spec.get("parameters", {})
 
     ##############################
@@ -122,7 +124,7 @@ class RuntimeHera(Runtime):
             Hera pipeline function.
         """
         # Setup function source and specs
-        LOGGER.info("Getting workflow source, specs and pipeline.")
+        logger.info("Getting workflow source, specs and pipeline.")
         dhcore_workflow = get_dhcore_workflow(spec.get("workflow"))
         workflow_source = save_workflow_source(
             self.runtime_dir,

@@ -5,7 +5,9 @@
 from __future__ import annotations
 
 from digitalhub.entities._commons.enums import State
-from digitalhub.utils.logger import LOGGER
+from digitalhub.utils.logger.logger import get_logger
+
+logger = get_logger(__file__)
 
 
 def build_status(build: dict) -> dict:
@@ -26,5 +28,5 @@ def build_status(build: dict) -> dict:
         return {"state": State.COMPLETED.value, "results": build}
     except Exception as e:
         msg = f"Something got wrong during run status building. Exception: {e.__class__}. Error: {e.args}"
-        LOGGER.exception(msg)
+        logger.exception(msg)
         raise RuntimeError(msg) from e
