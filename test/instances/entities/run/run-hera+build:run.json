@@ -15,21 +15,13 @@
   "spec": {
     "task": "hera+build://demo-etl/8ed8dd0a-379d-40dd-9a68-0c765d6b143e",
     "workflow": "hera://demo-etl/workflow1:77fcf9d1-3fb6-4117-9cba-e500f1223e59",
-    "inputs": {},
-    "outputs": {},
-    "parameters": {},
-    "source": {
-      "source": "main.py",
-      "handler": "pipeline",
-      "base64": "ZnJvbSBkaWdpdGFsaHViX3J1bnRpbWVfa2ZwLmRzbCBpbXBvcnQgcGlwZWxpbmVfY29udGV4dAoKZGVmIHBpcGVsaW5lKHVybCk6CiAgICB3aXRoIHBpcGVsaW5lX2NvbnRleHQoKSBhcyBwYzoKICAgICAgICAKICAgICAgICBzMV9kYXRhc2V0ID0gcGMuc3RlcChuYW1lPSJkb3dubG9hZCIsCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgZnVuY3Rpb249ImRvd25sb2FkZXItZnVuY3QiLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgIGFjdGlvbj0iam9iIiwKICAgICAgICAgICAgICAgICAgICAgICAgICAgICBpbnB1dHM9eyJ1cmwiOiB1cmx9LAogICAgICAgICAgICAgICAgICAgICAgICAgICAgIG91dHB1dHM9eyJkYXRhc2V0IjogImRhdGFzZXQifSkKICAgICAgICAKICAgICAgICBzMl9wYXJraW5nID0gcGMuc3RlcChuYW1lPSJleHRyYWN0X3BhcmtpbmciLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgIGZ1bmN0aW9uPSJleHRyYWN0LXBhcmtpbmdzIiwKICAgICAgICAgICAgICAgICAgICAgICAgICAgICBhY3Rpb249ImpvYiIsCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgaW5wdXRzPXsiZGkiOiBzMV9kYXRhc2V0Lm91dHB1dHNbJ2RhdGFzZXQnXX0sCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgb3V0cHV0cz17InBhcmtpbmdzIjogInBhcmtpbmdzIn0pCiAgICAgICAgCiAgICAgICAgczNfYWdncmVnYXRlID0gcGMuc3RlcChuYW1lPSJhZ2dyZWdhdGUiLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgZnVuY3Rpb249ImFnZ3JlZ2F0ZS1wYXJraW5ncyIsCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBhY3Rpb249ImpvYiIsCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBpbnB1dHM9eyJkaSI6IHMxX2RhdGFzZXQub3V0cHV0c1snZGF0YXNldCddfSwKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIG91dHB1dHM9eyJwYXJraW5nX2RhdGFfYWdncmVnYXRlZCI6ICJwYXJraW5nX2RhdGFfYWdncmVnYXRlZCJ9KQogICAgICAgIAogICAgICAgIHM0X3RvX2RiID0gcGMuc3RlcChuYW1lPSJ0b19kYiIsIAogICAgICAgICAgICAgICAgICAgICAgICAgICBmdW5jdGlvbj0idG8tZGIiLAogICAgICAgICAgICAgICAgICAgICAgICAgICBhY3Rpb249ImpvYiIsCiAgICAgICAgICAgICAgICAgICAgICAgICAgIGlucHV0cz17ImFnZ19kaSI6IHMzX2FnZ3JlZ2F0ZS5vdXRwdXRzWydwYXJraW5nX2RhdGFfYWdncmVnYXRlZCddLCAicGFya2luZ3NfZGkiOiBzMV9kYXRhc2V0Lm91dHB1dHNbJ2RhdGFzZXQnXX0sCiAgICAgICAgICAgICAgICAgICAgICAgICAgIG91dHB1dHM9e30p",
-      "lang": "python"
-    },
-    "build": {
-      "target_image": "demo-etl-workflow:latest",
-      "base_image": "python:3.11-slim"
-    },
-    "profile": "default",
-    "local_execution": false,
+    "volumes": [
+      {
+        "volume_type": "empty_dir",
+        "name": "volume1",
+        "mount_path": "/workspace"
+      }
+    ],
     "resources": {
       "cpu": "2",
       "mem": "2Gi"
@@ -40,14 +32,21 @@
         "value": "production"
       }
     ],
-    "secrets": ["docker-registry"],
-    "volumes": [
-      {
-        "name": "volume1",
-        "volume_type": "empty_dir",
-        "mount_path": "/workspace"
-      }
-    ]
+    "secrets": [
+      "docker-registry"
+    ],
+    "profile": "default",
+    "source": {
+      "source": "main.py",
+      "handler": "pipeline",
+      "base64": "ZnJvbSBkaWdpdGFsaHViX3J1bnRpbWVfa2ZwLmRzbCBpbXBvcnQgcGlwZWxpbmVfY29udGV4dAoKZGVmIHBpcGVsaW5lKHVybCk6CiAgICB3aXRoIHBpcGVsaW5lX2NvbnRleHQoKSBhcyBwYzoKICAgICAgICAKICAgICAgICBzMV9kYXRhc2V0ID0gcGMuc3RlcChuYW1lPSJkb3dubG9hZCIsCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgZnVuY3Rpb249ImRvd25sb2FkZXItZnVuY3QiLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgIGFjdGlvbj0iam9iIiwKICAgICAgICAgICAgICAgICAgICAgICAgICAgICBpbnB1dHM9eyJ1cmwiOiB1cmx9LAogICAgICAgICAgICAgICAgICAgICAgICAgICAgIG91dHB1dHM9eyJkYXRhc2V0IjogImRhdGFzZXQifSkKICAgICAgICAKICAgICAgICBzMl9wYXJraW5nID0gcGMuc3RlcChuYW1lPSJleHRyYWN0X3BhcmtpbmciLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgIGZ1bmN0aW9uPSJleHRyYWN0LXBhcmtpbmdzIiwKICAgICAgICAgICAgICAgICAgICAgICAgICAgICBhY3Rpb249ImpvYiIsCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgaW5wdXRzPXsiZGkiOiBzMV9kYXRhc2V0Lm91dHB1dHNbJ2RhdGFzZXQnXX0sCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgb3V0cHV0cz17InBhcmtpbmdzIjogInBhcmtpbmdzIn0pCiAgICAgICAgCiAgICAgICAgczNfYWdncmVnYXRlID0gcGMuc3RlcChuYW1lPSJhZ2dyZWdhdGUiLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgZnVuY3Rpb249ImFnZ3JlZ2F0ZS1wYXJraW5ncyIsCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBhY3Rpb249ImpvYiIsCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBpbnB1dHM9eyJkaSI6IHMxX2RhdGFzZXQub3V0cHV0c1snZGF0YXNldCddfSwKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIG91dHB1dHM9eyJwYXJraW5nX2RhdGFfYWdncmVnYXRlZCI6ICJwYXJraW5nX2RhdGFfYWdncmVnYXRlZCJ9KQogICAgICAgIAogICAgICAgIHM0X3RvX2RiID0gcGMuc3RlcChuYW1lPSJ0b19kYiIsIAogICAgICAgICAgICAgICAgICAgICAgICAgICBmdW5jdGlvbj0idG8tZGIiLAogICAgICAgICAgICAgICAgICAgICAgICAgICBhY3Rpb249ImpvYiIsCiAgICAgICAgICAgICAgICAgICAgICAgICAgIGlucHV0cz17ImFnZ19kaSI6IHMzX2FnZ3JlZ2F0ZS5vdXRwdXRzWydwYXJraW5nX2RhdGFfYWdncmVnYXRlZCddLCAicGFya2luZ3NfZGkiOiBzMV9kYXRhc2V0Lm91dHB1dHNbJ2RhdGFzZXQnXX0sCiAgICAgICAgICAgICAgICAgICAgICAgICAgIG91dHB1dHM9e30p",
+      "lang": "python"
+    },
+    "build": {
+      "target_image": "demo-etl-workflow:latest",
+      "base_image": "python:3.11-slim"
+    },
+    "parameters": {}
   },
   "status": {
     "state": "COMPLETED",
