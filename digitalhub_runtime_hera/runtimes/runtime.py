@@ -5,7 +5,7 @@
 from __future__ import annotations
 
 import shutil
-from typing import Callable
+from collections.abc import Callable
 
 from digitalhub.context.api import get_context
 from digitalhub.runtimes._base import Runtime

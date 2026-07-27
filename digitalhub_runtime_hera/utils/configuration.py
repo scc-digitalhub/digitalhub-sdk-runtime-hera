@@ -5,8 +5,8 @@
 from __future__ import annotations
 
 import typing
+from collections.abc import Callable
 from pathlib import Path
-from typing import Callable
 
 from digitalhub.entities.workflow.crud import get_workflow
 from digitalhub.stores.data.api import get_store
