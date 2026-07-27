@@ -29,5 +29,5 @@ def run_hera_build(pipeline: Callable, *args, **kwargs) -> dict:
         raise RuntimeError(f"Function {pipeline.__name__} must not have arguments.")
     workflow = pipeline()
     if not isinstance(workflow, Workflow):
-        raise RuntimeError(f"Expected Hera Workflow, got {type(workflow)}. Your function must return a Hera Workflow.")
+        raise TypeError(f"Expected Hera Workflow, got {type(workflow)}. Your function must return a Hera Workflow.")
     return {"workflow": encode_string(workflow.to_yaml())}

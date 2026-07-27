@@ -44,12 +44,12 @@ def step(**step_kwargs) -> Task:
     elif isinstance(inner_ctx, Steps):
         op_type = "step-op-"
     else:
-        raise ValueError("step() can only be called inside a DAG or Steps")
+        raise TypeError("step() can only be called inside a DAG or Steps")
     _context.pieces = _context.pieces[:-1]
 
     inputs = step_kwargs.pop("inputs", None)
     if inputs is not None:
-        step_kwargs["inputs"] = [k for k in inputs.keys()]
+        step_kwargs["inputs"] = list(inputs)
     container = container_template(**step_kwargs)
 
     _context.pieces.append(inner_ctx)
