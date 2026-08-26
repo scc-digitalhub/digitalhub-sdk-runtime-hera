@@ -11,6 +11,8 @@ from digitalhub.utils.generic_utils import decode_base64_string
 from digitalhub.utils.io_utils import write_text
 from digitalhub.utils.uri_utils import has_local_scheme
 
+from digitalhub_runtime_hera.entities._commons.enums import Actions
+
 if typing.TYPE_CHECKING:
     from digitalhub_runtime_hera.entities.workflow.hera.spec import WorkflowSpecHera
     from digitalhub_runtime_hera.entities.workflow.hera.status import WorkflowStatusHera
@@ -57,3 +59,40 @@ class WorkflowHera(Workflow):
                 return pth
 
         return super().export()
+
+    def build(
+        self,
+        wait: bool = True,
+        log_info: bool = True,
+        extensions: list[dict] | None = None,
+        **kwargs,
+    ):
+        """Build the workflow using the build action."""
+        return super().run(
+            Actions.BUILD.value,
+            wait=wait,
+            log_info=log_info,
+            extensions=extensions,
+            **kwargs,
+        )
+
+    def run(
+        self,
+        action: str,
+        wait: bool = False,
+        log_info: bool = True,
+        extensions: list[dict] | None = None,
+        auto_build: bool = True,
+        **kwargs,
+    ):
+        """Run the workflow, building it when no image is available."""
+        if auto_build and self.spec.image is None:
+            self.build(wait=True, log_info=log_info)
+
+        return super().run(
+            action,
+            wait=wait,
+            log_info=log_info,
+            extensions=extensions,
+            **kwargs,
+        )
