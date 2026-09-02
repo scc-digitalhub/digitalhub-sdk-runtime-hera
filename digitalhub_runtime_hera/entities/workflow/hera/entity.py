@@ -82,7 +82,7 @@ class WorkflowHera(Workflow):
         wait: bool = False,
         log_info: bool = True,
         extensions: list[dict] | None = None,
-        auto_build: bool = True,
+        auto_build: bool = False,
         **kwargs,
     ):
         """Run the workflow, building it when no workflow is built."""
