@@ -85,9 +85,10 @@ class WorkflowHera(Workflow):
         auto_build: bool = True,
         **kwargs,
     ):
-        """Run the workflow, building it when no image is available."""
-        if auto_build and self.spec.image is None:
+        """Run the workflow, building it when no workflow is built."""
+        if auto_build and self.spec.workflow is None:
             self.build(wait=True, log_info=log_info)
+            self.refresh()
 
         return super().run(
             action,
