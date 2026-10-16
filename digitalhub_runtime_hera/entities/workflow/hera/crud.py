@@ -68,6 +68,21 @@ def new_workflow_hera(
     -------
     WorkflowHera
         Created Hera workflow entity.
+
+    Examples
+    --------
+    Create a workflow from a local Python pipeline file:
+
+    ```python
+    import digitalhub as dh
+
+    workflow = dh.new_workflow_hera(
+        project="my-project",
+        name="training-pipeline",
+        code_src="./pipeline.py",
+        handler="pipeline",
+    )
+    ```
     """
     if code is not None and code_src is not None:
         raise ValueError("Only one of 'code' or 'code_src' can be provided.")
