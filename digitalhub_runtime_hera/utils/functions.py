@@ -8,7 +8,6 @@ from collections.abc import Callable
 from inspect import signature
 
 from digitalhub.utils.generic_utils import encode_string
-from hera.workflows import Workflow
 
 
 def run_hera_build(pipeline: Callable, *args, **kwargs) -> dict:
@@ -25,6 +24,8 @@ def run_hera_build(pipeline: Callable, *args, **kwargs) -> dict:
     dict
         Pipeline spec.
     """
+    from hera.workflows import Workflow
+
     if dict(signature(pipeline).parameters):
         raise RuntimeError(f"Function {pipeline.__name__} must not have arguments.")
     workflow = pipeline()
