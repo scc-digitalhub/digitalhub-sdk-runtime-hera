@@ -11,7 +11,7 @@ from digitalhub_runtime_hera.entities.workflow.hera.models import BuildValidator
 
 def test_workflow_spec_validates_nested_runtime_models() -> None:
     spec = WorkflowHeraBuilder().build_spec(
-        source={"source": "main.py"},
+        source={"source": "main.py", "handler": "main"},
         build={"base64": "encoded"},
     )
 
@@ -26,4 +26,19 @@ def test_workflow_spec_requires_source_and_rejects_invalid_nested_values() -> No
         builder.build_spec()
 
     with pytest.raises(ValidationError):
-        builder.build_spec(source={"lang": "invalid"})
+        builder.build_spec(source={"source": "main.py", "handler": "main", "lang": "invalid"})
+
+
+def test_hera_builder_routes_top_level_source_arguments() -> None:
+    builder = WorkflowHeraBuilder()
+
+    workflow = builder.build(
+        kind=builder.ENTITY_KIND,
+        project="project",
+        name="workflow",
+        code="from hera import Workflow",
+        handler="main",
+    )
+
+    assert workflow.spec.source.base64 == "ZnJvbSBoZXJhIGltcG9ydCBXb3JrZmxvdw=="
+    assert workflow.spec.source.handler == "main"

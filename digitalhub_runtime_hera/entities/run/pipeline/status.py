@@ -6,8 +6,4 @@ from __future__ import annotations
 
 from digitalhub_runtime_hera.entities.run._base.status import RunStatusHeraRun
 
-
-class RunStatusHeraRunPipeline(RunStatusHeraRun):
-    """
-    RunStatusHeraRunPipeline status.
-    """
+RunStatusHeraRunPipeline = RunStatusHeraRun

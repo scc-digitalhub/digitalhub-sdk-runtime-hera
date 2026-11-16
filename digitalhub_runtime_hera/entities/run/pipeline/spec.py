@@ -6,6 +6,4 @@ from __future__ import annotations
 
 from digitalhub_runtime_hera.entities.run._base.spec import RunSpecHeraRun
 
-
-class RunSpecHeraRunPipeline(RunSpecHeraRun):
-    """RunSpecHeraRunPipeline specifications."""
+RunSpecHeraRunPipeline = RunSpecHeraRun

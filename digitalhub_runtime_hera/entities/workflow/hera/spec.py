@@ -6,7 +6,7 @@ from __future__ import annotations
 
 from digitalhub.entities.workflow._base.spec import WorkflowSpec
 
-from digitalhub_runtime_hera.entities.workflow.hera.models import BuildValidator, SourceValidator
+from digitalhub_runtime_hera.entities.workflow.hera.models import BuildValidator, HeraSourceCode
 
 
 class WorkflowSpecHera(WorkflowSpec):
@@ -14,7 +14,7 @@ class WorkflowSpecHera(WorkflowSpec):
     WorkflowSpecHera specifications.
     """
 
-    source: SourceValidator
+    source: HeraSourceCode
     build: BuildValidator | None = None
     workflow: str | None = None
     image: str | None = None

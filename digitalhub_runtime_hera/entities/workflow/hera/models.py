@@ -5,7 +5,9 @@
 from __future__ import annotations
 
 from enum import Enum
+from typing import ClassVar
 
+from digitalhub.entities._mixin.source.models import HandlerSourceCode
 from pydantic import BaseModel, ConfigDict, Field
 
 
@@ -17,27 +19,15 @@ class SourceLang(Enum):
     PYTHON = "python"
 
 
-class SourceValidator(BaseModel):
-    """
-    Source code params.
-    """
+class HeraSourceCode(HandlerSourceCode):
+    """Source code model for Hera workflows."""
 
-    model_config = ConfigDict(use_enum_values=True)
-
-    source: str = None
-    "Pointer to source code."
-
-    handler: str = None
-    "Function entrypoint."
-
-    code: str = None
-    "Source code (plain text)."
-
-    base64: str = None
-    "Source code (base64 encoded)."
-
+    DEFAULT_LANG: ClassVar[str | None] = "python"
+    REQUIRE_HANDLER: ClassVar[bool] = True
     lang: SourceLang = Field(default=SourceLang.PYTHON.value)
-    "Source code language (hint)."
+
+
+SourceValidator = HeraSourceCode
 
 
 class BuildLang(Enum):

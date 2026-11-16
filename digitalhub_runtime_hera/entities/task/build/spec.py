@@ -6,8 +6,4 @@ from __future__ import annotations
 
 from digitalhub.entities.task._base.spec import TaskSpecWorkflow
 
-
-class TaskSpecHeraBuild(TaskSpecWorkflow):
-    """
-    TaskSpecHeraBuild specifications.
-    """
+TaskSpecHeraBuild = TaskSpecWorkflow
