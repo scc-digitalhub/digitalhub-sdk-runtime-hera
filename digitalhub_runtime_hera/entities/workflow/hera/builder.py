@@ -9,7 +9,7 @@ from digitalhub.entities.workflow._base.builder import WorkflowBuilder
 from digitalhub_runtime_hera.entities._base.runtime_entity.builder import RuntimeEntityBuilderHera
 from digitalhub_runtime_hera.entities._commons.enums import EntityKinds
 from digitalhub_runtime_hera.entities.workflow.hera.entity import WorkflowHera
-from digitalhub_runtime_hera.entities.workflow.hera.spec import WorkflowSpecHera, WorkflowValidatorHera
+from digitalhub_runtime_hera.entities.workflow.hera.spec import WorkflowSpecHera
 from digitalhub_runtime_hera.entities.workflow.hera.status import WorkflowStatusHera
 from digitalhub_runtime_hera.entities.workflow.hera.utils import source_check, source_post_check
 
@@ -21,7 +21,6 @@ class WorkflowHeraBuilder(WorkflowBuilder, RuntimeEntityBuilderHera):
 
     ENTITY_CLASS = WorkflowHera
     ENTITY_SPEC_CLASS = WorkflowSpecHera
-    ENTITY_SPEC_VALIDATOR = WorkflowValidatorHera
     ENTITY_STATUS_CLASS = WorkflowStatusHera
     ENTITY_KIND = EntityKinds.WORKFLOW_HERA.value
 

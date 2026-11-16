@@ -4,12 +4,8 @@
 
 from __future__ import annotations
 
-from digitalhub_runtime_hera.entities.run._base.spec import RunSpecHeraRun, RunValidatorHeraRun
+from digitalhub_runtime_hera.entities.run._base.spec import RunSpecHeraRun
 
 
 class RunSpecHeraRunBuild(RunSpecHeraRun):
     """RunSpecHeraRunBuild specifications."""
-
-
-class RunValidatorHeraRunBuild(RunValidatorHeraRun):
-    """RunValidatorHeraRunBuild validator."""

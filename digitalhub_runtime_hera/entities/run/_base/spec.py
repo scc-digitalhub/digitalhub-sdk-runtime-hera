@@ -4,49 +4,12 @@
 
 from __future__ import annotations
 
-from digitalhub.entities.run._base.spec import RunSpec, RunValidator
+from digitalhub.entities.run._base.spec import RunSpec
 
 
 class RunSpecHeraRun(RunSpec):
     """RunSpecHeraRun specifications."""
 
-    def __init__(
-        self,
-        task: str,
-        function: str | None = None,
-        workflow: str | None = None,
-        volumes: list[dict] | None = None,
-        resources: dict | None = None,
-        envs: list[dict] | None = None,
-        secrets: list[str] | None = None,
-        profile: str | None = None,
-        source: dict | None = None,
-        build: dict | None = None,
-        parameters: dict | None = None,
-        **kwargs,
-    ) -> None:
-        super().__init__(
-            task=task,
-            function=function,
-            workflow=workflow,
-            volumes=volumes,
-            resources=resources,
-            envs=envs,
-            secrets=secrets,
-            profile=profile,
-            **kwargs,
-        )
-        self.source = source
-        self.build = build
-        self.parameters = parameters
-
-
-class RunValidatorHeraRun(RunValidator):
-    """RunValidatorHeraRun validator."""
-
-    # Workflow parameters
-    source: dict = None
-    build: dict = None
-
-    # Run parameters
-    parameters: dict = None
+    source: dict | None = None
+    build: dict | None = None
+    parameters: dict | None = None
