@@ -13,8 +13,9 @@ from digitalhub.utils.file_utils import eval_py_type
 from digitalhub_runtime_hera.entities._commons.enums import Actions
 
 if typing.TYPE_CHECKING:
+    from digitalhub.entities._base.entity.status import Status
+
     from digitalhub_runtime_hera.entities.workflow.hera.spec import WorkflowSpecHera
-    from digitalhub_runtime_hera.entities.workflow.hera.status import WorkflowStatusHera
 
 
 class WorkflowHera(SourceEntityMixin, Workflow):
@@ -26,7 +27,7 @@ class WorkflowHera(SourceEntityMixin, Workflow):
         super().__init__(*args, **kwargs)
 
         self.spec: WorkflowSpecHera
-        self.status: WorkflowStatusHera
+        self.status: Status
 
     def _is_inlineable_source(self, path: str) -> bool:
         return eval_py_type(path)

@@ -4,6 +4,7 @@
 
 from __future__ import annotations
 
+from digitalhub.entities._base.entity.status import Status
 from digitalhub.entities._mixin.source.builder import SourceBuilderMixin
 from digitalhub.entities.workflow._base.builder import WorkflowBuilder
 
@@ -11,7 +12,6 @@ from digitalhub_runtime_hera.entities._base.runtime_entity.builder import Runtim
 from digitalhub_runtime_hera.entities._commons.enums import EntityKinds
 from digitalhub_runtime_hera.entities.workflow.hera.entity import WorkflowHera
 from digitalhub_runtime_hera.entities.workflow.hera.spec import WorkflowSpecHera
-from digitalhub_runtime_hera.entities.workflow.hera.status import WorkflowStatusHera
 
 
 class WorkflowHeraBuilder(SourceBuilderMixin, WorkflowBuilder, RuntimeEntityBuilderHera):
@@ -21,5 +21,5 @@ class WorkflowHeraBuilder(SourceBuilderMixin, WorkflowBuilder, RuntimeEntityBuil
 
     ENTITY_CLASS = WorkflowHera
     ENTITY_SPEC_CLASS = WorkflowSpecHera
-    ENTITY_STATUS_CLASS = WorkflowStatusHera
+    ENTITY_STATUS_CLASS = Status
     ENTITY_KIND = EntityKinds.WORKFLOW_HERA.value

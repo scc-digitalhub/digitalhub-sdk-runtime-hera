@@ -4,12 +4,12 @@
 
 from __future__ import annotations
 
-from digitalhub.entities.workflow._base.spec import WorkflowSpec
+from digitalhub.entities._base.entity.spec import Spec
 
 from digitalhub_runtime_hera.entities.workflow.hera.models import BuildValidator, HeraSourceCode
 
 
-class WorkflowSpecHera(WorkflowSpec):
+class WorkflowSpecHera(Spec):
     """
     WorkflowSpecHera specifications.
     """

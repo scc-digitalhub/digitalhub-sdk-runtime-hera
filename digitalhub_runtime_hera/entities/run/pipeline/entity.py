@@ -9,8 +9,8 @@ import typing
 from digitalhub_runtime_hera.entities.run._base.entity import RunHeraRun
 
 if typing.TYPE_CHECKING:
-    from digitalhub_runtime_hera.entities.run.pipeline.spec import RunSpecHeraRunPipeline
-    from digitalhub_runtime_hera.entities.run.pipeline.status import RunStatusHeraRunPipeline
+    from digitalhub_runtime_hera.entities.run._base.spec import RunSpecHeraRun
+    from digitalhub_runtime_hera.entities.run._base.status import RunStatusHeraRun
 
 
 class RunHeraRunPipeline(RunHeraRun):
@@ -21,5 +21,5 @@ class RunHeraRunPipeline(RunHeraRun):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
 
-        self.spec: RunSpecHeraRunPipeline
-        self.status: RunStatusHeraRunPipeline
+        self.spec: RunSpecHeraRun
+        self.status: RunStatusHeraRun
