@@ -9,8 +9,9 @@ import typing
 from digitalhub.entities.task._base.entity import Task
 
 if typing.TYPE_CHECKING:
+    from digitalhub.entities._base.entity.status import Status
+
     from digitalhub_runtime_hera.entities.task.pipeline.spec import TaskSpecHeraPipeline
-    from digitalhub_runtime_hera.entities.task.pipeline.status import TaskStatusHeraPipeline
 
 
 class TaskHeraPipeline(Task):
@@ -22,4 +23,4 @@ class TaskHeraPipeline(Task):
         super().__init__(*args, **kwargs)
 
         self.spec: TaskSpecHeraPipeline
-        self.status: TaskStatusHeraPipeline
+        self.status: Status

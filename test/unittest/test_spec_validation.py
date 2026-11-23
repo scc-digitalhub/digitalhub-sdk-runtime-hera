@@ -5,6 +5,7 @@
 import pytest
 from pydantic import ValidationError
 
+from digitalhub_runtime_hera.entities.run.build.builder import RunHeraRunBuildBuilder
 from digitalhub_runtime_hera.entities.workflow.hera.builder import WorkflowHeraBuilder
 from digitalhub_runtime_hera.entities.workflow.hera.models import BuildValidator, SourceValidator
 
@@ -42,3 +43,9 @@ def test_hera_builder_routes_top_level_source_arguments() -> None:
 
     assert workflow.spec.source.base64 == "ZnJvbSBoZXJhIGltcG9ydCBXb3JrZmxvdw=="
     assert workflow.spec.source.handler == "main"
+
+
+def test_hera_run_builder_requires_workflow_reference() -> None:
+    spec = RunHeraRunBuildBuilder().build_spec(workflow="workflow", task="task")
+
+    assert spec.workflow == "workflow"

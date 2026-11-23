@@ -4,11 +4,10 @@
 
 from __future__ import annotations
 
-from digitalhub.entities.run._base.spec import RunSpec
-from digitalhub.entities.task._base.spec import WorkflowSpecMixin
+from digitalhub.entities.run._base.spec import RunSpecWorkflow
 
 
-class RunSpecHeraRun(WorkflowSpecMixin, RunSpec):
+class RunSpecHeraRun(RunSpecWorkflow):
     """RunSpecHeraRun specifications."""
 
     source: dict | None = None
