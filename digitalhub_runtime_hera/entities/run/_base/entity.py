@@ -7,7 +7,7 @@ from __future__ import annotations
 import typing
 from typing import Any
 
-from digitalhub.entities.run._base.entity import Run
+from digitalhub.plugins import Run
 
 if typing.TYPE_CHECKING:
     from digitalhub_runtime_hera.entities.run._base.spec import RunSpecHeraRun

@@ -8,7 +8,7 @@ import shutil
 from collections.abc import Callable
 
 from digitalhub.context.api import get_context
-from digitalhub.runtimes._base import Runtime
+from digitalhub.plugins import Runtime
 from digitalhub.utils.logger.logger import get_logger
 
 from digitalhub_runtime_hera.entities._commons.enums import Actions

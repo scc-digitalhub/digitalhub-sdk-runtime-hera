@@ -4,7 +4,7 @@
 
 from __future__ import annotations
 
-from digitalhub.entities.run._base.builder import RunBuilder
+from digitalhub.plugins import RunBuilder
 
 from digitalhub_runtime_hera.entities._base.runtime_entity.builder import RuntimeEntityBuilderHera
 from digitalhub_runtime_hera.entities._commons.enums import EntityKinds

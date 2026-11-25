@@ -4,7 +4,7 @@
 
 from __future__ import annotations
 
-from digitalhub.entities._commons.enums import State
+from digitalhub.plugins import State
 from digitalhub.utils.logger.logger import get_logger
 
 logger = get_logger(__file__)

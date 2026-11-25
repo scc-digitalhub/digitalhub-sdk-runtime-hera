@@ -27,7 +27,7 @@ from digitalhub.utils.uri_utils import (
 )
 
 if typing.TYPE_CHECKING:
-    from digitalhub.entities.workflow._base.entity import Workflow
+    from digitalhub.plugins import Workflow
 
 logger = get_logger(__file__)
 DEFAULT_PY_FILE = "main.py"

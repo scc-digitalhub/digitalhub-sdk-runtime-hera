@@ -4,7 +4,7 @@
 
 from __future__ import annotations
 
-from digitalhub.entities.run._base.spec import RunSpecWorkflow
+from digitalhub.plugins import RunSpecWorkflow
 
 
 class RunSpecHeraRun(RunSpecWorkflow):

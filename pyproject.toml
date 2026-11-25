@@ -33,6 +33,9 @@ dev = [
     "digitalhub[dev]>=0.16.0, <0.17"
 ]
 
+[project.entry-points."digitalhub.runtimes"]
+hera = "digitalhub_runtime_hera:entity_plugins"
+
 [project.urls]
 Homepage = "https://github.com/scc-digitalhub/digitalhub-sdk-runtime-hera"
 

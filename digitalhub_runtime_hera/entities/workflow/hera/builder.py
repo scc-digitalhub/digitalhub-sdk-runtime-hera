@@ -4,9 +4,7 @@
 
 from __future__ import annotations
 
-from digitalhub.entities._base.entity.status import Status
-from digitalhub.entities._mixin.source.builder import SourceBuilderMixin
-from digitalhub.entities.workflow._base.builder import WorkflowBuilder
+from digitalhub.plugins import SourceBuilderMixin, Status, WorkflowBuilder
 
 from digitalhub_runtime_hera.entities._base.runtime_entity.builder import RuntimeEntityBuilderHera
 from digitalhub_runtime_hera.entities._commons.enums import EntityKinds

@@ -6,14 +6,13 @@ from __future__ import annotations
 
 import typing
 
-from digitalhub.entities._mixin.source.entity import SourceEntityMixin
-from digitalhub.entities.workflow._base.entity import Workflow
+from digitalhub.plugins import SourceEntityMixin, Workflow
 from digitalhub.utils.file_utils import eval_py_type
 
 from digitalhub_runtime_hera.entities._commons.enums import Actions
 
 if typing.TYPE_CHECKING:
-    from digitalhub.entities._base.entity.status import Status
+    from digitalhub.plugins import Status
 
     from digitalhub_runtime_hera.entities.workflow.hera.spec import WorkflowSpecHera
 
