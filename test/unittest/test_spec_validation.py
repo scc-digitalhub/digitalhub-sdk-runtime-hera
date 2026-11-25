@@ -3,15 +3,15 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import pytest
+from digitalhub.factory.registry import registry
 from pydantic import ValidationError
 
-from digitalhub_runtime_hera.entities.run.build.builder import RunHeraRunBuildBuilder
-from digitalhub_runtime_hera.entities.workflow.hera.builder import WorkflowHeraBuilder
+from digitalhub_runtime_hera.entities._commons.enums import EntityKinds
 from digitalhub_runtime_hera.entities.workflow.hera.models import BuildValidator, SourceValidator
 
 
 def test_workflow_spec_validates_nested_runtime_models() -> None:
-    spec = WorkflowHeraBuilder().build_spec(
+    spec = registry.get_entity_builder(EntityKinds.WORKFLOW_HERA.value).build_spec(
         source={"source": "main.py", "handler": "main"},
         build={"base64": "encoded"},
     )
@@ -21,7 +21,7 @@ def test_workflow_spec_validates_nested_runtime_models() -> None:
 
 
 def test_workflow_spec_requires_source_and_rejects_invalid_nested_values() -> None:
-    builder = WorkflowHeraBuilder()
+    builder = registry.get_entity_builder(EntityKinds.WORKFLOW_HERA.value)
 
     with pytest.raises(ValidationError):
         builder.build_spec()
@@ -31,7 +31,7 @@ def test_workflow_spec_requires_source_and_rejects_invalid_nested_values() -> No
 
 
 def test_hera_builder_routes_top_level_source_arguments() -> None:
-    builder = WorkflowHeraBuilder()
+    builder = registry.get_entity_builder(EntityKinds.WORKFLOW_HERA.value)
 
     workflow = builder.build(
         kind=builder.ENTITY_KIND,
@@ -46,6 +46,6 @@ def test_hera_builder_routes_top_level_source_arguments() -> None:
 
 
 def test_hera_run_builder_requires_workflow_reference() -> None:
-    spec = RunHeraRunBuildBuilder().build_spec(workflow="workflow", task="task")
+    spec = registry.get_entity_builder(EntityKinds.RUN_HERA_BUILD.value).build_spec(workflow="workflow", task="task")
 
     assert spec.workflow == "workflow"

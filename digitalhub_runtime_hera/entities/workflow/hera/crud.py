@@ -8,7 +8,7 @@ import typing
 
 from digitalhub.entities.workflow.crud import new_workflow
 
-from digitalhub_runtime_hera.entities.workflow.hera.builder import WorkflowHeraBuilder
+from digitalhub_runtime_hera.entities._commons.enums import EntityKinds
 
 if typing.TYPE_CHECKING:
     from digitalhub_runtime_hera.entities.workflow.hera.entity import WorkflowHera
@@ -90,7 +90,7 @@ def new_workflow_hera(
     return new_workflow(
         project=project,
         name=name,
-        kind=WorkflowHeraBuilder.ENTITY_KIND,
+        kind=EntityKinds.WORKFLOW_HERA.value,
         uuid=uuid,
         version=version,
         description=description,
