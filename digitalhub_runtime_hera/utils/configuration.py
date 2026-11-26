@@ -9,6 +9,7 @@ from collections.abc import Callable
 from pathlib import Path
 
 from digitalhub.entities.workflow.crud import get_workflow
+from digitalhub.plugins import EntityRef
 from digitalhub.stores.data.api import get_store
 from digitalhub.utils.generic_utils import (
     decode_base64_string,
@@ -31,25 +32,6 @@ if typing.TYPE_CHECKING:
 
 logger = get_logger(__file__)
 DEFAULT_PY_FILE = "main.py"
-
-
-def _parse_workflow_string(workflow_string: str) -> tuple[str, str, str]:
-    """
-    Parse workflow string into project, name, and UUID.
-
-    Parameters
-    ----------
-    workflow_string : str
-        Workflow string in format 'workflow://project/name:uuid'.
-
-    Returns
-    -------
-    tuple[str, str, str]
-        Project, name, and UUID.
-    """
-    splitted = workflow_string.split("://")[1].split("/")
-    name, uuid = splitted[1].split(":")
-    return splitted[0], name, uuid
 
 
 def _get_workflow_file_path(path: Path, handler: str) -> Path:
@@ -206,12 +188,12 @@ def get_dhcore_workflow(workflow_string: str) -> Workflow:
     Workflow
         DHCore workflow.
     """
-    project, name, uuid = _parse_workflow_string(workflow_string)
-    logger.info(f"Getting workflow {name}:{uuid}.")
+    ref = EntityRef.parse(workflow_string)
+    logger.info(f"Getting workflow {ref.name}:{ref.id}.")
     try:
-        return get_workflow(name, project=project, entity_id=uuid)
+        return get_workflow(ref.name, project=ref.project, entity_id=ref.id)
     except Exception as e:
-        msg = f"Error getting workflow {name}:{uuid}. Exception: {e.__class__}. Error: {e.args}"
+        msg = f"Error getting workflow {ref.name}:{ref.id}. Exception: {e.__class__}. Error: {e.args}"
         logger.exception(msg)
         raise RuntimeError(msg) from e
 
