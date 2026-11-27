@@ -10,18 +10,16 @@ from digitalhub.plugins import (
     RunBuilder,
     SourceBuilderMixin,
     Status,
+    Task,
     TaskBuilder,
     TaskSpecWorkflow,
     WorkflowBuilder,
 )
 
 from digitalhub_runtime_hera.entities._commons.enums import Actions, EntityKinds
+from digitalhub_runtime_hera.entities.run._base.entity import RunHeraRun
 from digitalhub_runtime_hera.entities.run._base.spec import RunSpecHeraRun
 from digitalhub_runtime_hera.entities.run._base.status import RunStatusHeraRun
-from digitalhub_runtime_hera.entities.run.build.entity import RunHeraRunBuild
-from digitalhub_runtime_hera.entities.run.pipeline.entity import RunHeraRunPipeline
-from digitalhub_runtime_hera.entities.task.build.entity import TaskHeraBuild
-from digitalhub_runtime_hera.entities.task.pipeline.entity import TaskHeraPipeline
 from digitalhub_runtime_hera.entities.workflow.hera.crud import new_workflow_hera
 from digitalhub_runtime_hera.entities.workflow.hera.entity import WorkflowHera
 from digitalhub_runtime_hera.entities.workflow.hera.spec import WorkflowSpecHera
@@ -42,18 +40,14 @@ hera = ExecFamily(
     ),
     actions={
         Actions.PIPELINE: Action(
-            task=BuilderDef(
-                EntityKinds.TASK_HERA_PIPELINE, TaskHeraPipeline, TaskSpecWorkflow, Status, base=TaskBuilder
-            ),
+            task=BuilderDef(EntityKinds.TASK_HERA_PIPELINE, Task, TaskSpecWorkflow, Status, base=TaskBuilder),
             run=BuilderDef(
-                EntityKinds.RUN_HERA_PIPELINE, RunHeraRunPipeline, RunSpecHeraRun, RunStatusHeraRun, base=RunBuilder
+                EntityKinds.RUN_HERA_PIPELINE, RunHeraRun, RunSpecHeraRun, RunStatusHeraRun, base=RunBuilder
             ),
         ),
         Actions.BUILD: Action(
-            task=BuilderDef(EntityKinds.TASK_HERA_BUILD, TaskHeraBuild, TaskSpecWorkflow, Status, base=TaskBuilder),
-            run=BuilderDef(
-                EntityKinds.RUN_HERA_BUILD, RunHeraRunBuild, RunSpecHeraRun, RunStatusHeraRun, base=RunBuilder
-            ),
+            task=BuilderDef(EntityKinds.TASK_HERA_BUILD, Task, TaskSpecWorkflow, Status, base=TaskBuilder),
+            run=BuilderDef(EntityKinds.RUN_HERA_BUILD, RunHeraRun, RunSpecHeraRun, RunStatusHeraRun, base=RunBuilder),
         ),
     },
     runtime_builder=RUNTIME_HERA_BUILDER,
