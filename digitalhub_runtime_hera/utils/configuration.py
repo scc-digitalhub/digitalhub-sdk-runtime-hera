@@ -9,23 +9,9 @@ from collections.abc import Callable
 from pathlib import Path
 
 from digitalhub.entities.workflow.crud import get_workflow
-from digitalhub.plugins import EntityRef
-from digitalhub.stores.data.api import get_store
-from digitalhub.utils.generic_utils import (
-    decode_base64_string,
-    extract_archive,
-    import_function,
-    requests_chunk_download,
-)
-from digitalhub.utils.git_utils import clone_repository
+from digitalhub.plugins import EntityRef, fetch_source
+from digitalhub.utils.generic_utils import decode_base64_string, import_function
 from digitalhub.utils.logger.logger import get_logger
-from digitalhub.utils.uri_utils import (
-    get_filename_from_uri,
-    has_git_scheme,
-    has_remote_scheme,
-    has_s3_scheme,
-    has_zip_scheme,
-)
 
 if typing.TYPE_CHECKING:
     from digitalhub.plugins import Workflow
@@ -75,105 +61,6 @@ def _extract_handler_function_name(handler: str) -> str:
     return handler
 
 
-def _download_and_extract_archive(source: str, path: Path) -> None:
-    """
-    Download and extract an archive from a URL or S3.
-
-    Parameters
-    ----------
-    source : str
-        Source URL (with zip+ scheme).
-    path : Path
-        Destination path.
-    """
-    clean_source = source.removeprefix("zip+")
-    filename = path / get_filename_from_uri(source)
-
-    if has_s3_scheme(clean_source):
-        store = get_store(clean_source)
-        store.get_s3_source(source, filename)
-    else:
-        requests_chunk_download(clean_source, filename)
-
-    extract_archive(path, filename)
-    filename.unlink()
-
-
-def _save_base64_source(path: Path, base64_content: str) -> Path:
-    """
-    Save base64-encoded source to file.
-
-    Parameters
-    ----------
-    path : Path
-        Destination directory.
-    base64_content : str
-        Base64-encoded source code.
-
-    Returns
-    -------
-    Path
-        Path to the saved file (directory/main.py).
-    """
-    path.mkdir(parents=True, exist_ok=True)
-    file_path = path / DEFAULT_PY_FILE
-    file_path.write_text(decode_base64_string(base64_content))
-    return file_path
-
-
-def _download_remote_source(path: Path, source: str) -> None:
-    """
-    Download source from remote URL (http/https).
-
-    Parameters
-    ----------
-    path : Path
-        Destination directory.
-    source : str
-        Remote source URL.
-    """
-    path.mkdir(parents=True, exist_ok=True)
-
-    if has_zip_scheme(source):
-        _download_and_extract_archive(source, path)
-    else:
-        filename = path / get_filename_from_uri(source)
-        requests_chunk_download(source, filename)
-
-
-def _download_s3_source(path: Path, source: str) -> None:
-    """
-    Download source from S3.
-
-    Parameters
-    ----------
-    path : Path
-        Destination directory.
-    source : str
-        S3 source URL (must be zip+s3:// scheme).
-    """
-    if not has_zip_scheme(source):
-        raise RuntimeError("S3 source must be a zip file with scheme zip+s3://.")
-
-    path.mkdir(parents=True, exist_ok=True)
-    _download_and_extract_archive(source, path)
-
-
-def _clone_git_source(path: Path, source: str) -> None:
-    """
-    Clone git repository.
-
-    Parameters
-    ----------
-    path : Path
-        Destination directory.
-    source : str
-        Git repository URL.
-    """
-    path.mkdir(parents=True, exist_ok=True)
-    clone_repository(path, source)
-
-
 def get_dhcore_workflow(workflow_string: str) -> Workflow:
     """
     Get DHCore workflow.
@@ -220,22 +107,15 @@ def save_workflow_source(path: Path, source_spec: dict) -> Path:
 
     # Base64-encoded source
     if base64 is not None:
-        return _save_base64_source(path, base64)
+        path.mkdir(parents=True, exist_ok=True)
+        file_path = path / DEFAULT_PY_FILE
+        file_path.write_text(decode_base64_string(base64))
+        return file_path
 
     if source is None:
         raise RuntimeError("Workflow source not found in spec.")
 
-    # Download source based on scheme
-    if has_git_scheme(source):
-        _clone_git_source(path, source)
-    elif has_remote_scheme(source):
-        _download_remote_source(path, source)
-    elif has_s3_scheme(source):
-        _download_s3_source(path, source)
-    else:
-        raise RuntimeError(f"Unable to collect source from: {source}")
-
-    # Return path to the workflow file
+    fetch_source(path, source)
     return _get_workflow_file_path(path, handler)
 
 
