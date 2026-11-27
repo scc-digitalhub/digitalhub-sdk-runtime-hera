@@ -25,4 +25,3 @@ class Actions(Enum):
     """
 
     PIPELINE = "pipeline"
-    BUILD = "build"

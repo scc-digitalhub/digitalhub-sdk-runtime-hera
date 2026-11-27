@@ -7,6 +7,7 @@ from digitalhub.plugins import (
     BuilderDef,
     CrudPlugin,
     ExecFamily,
+    ExecutableActions,
     RunBuilder,
     SourceBuilderMixin,
     Status,
@@ -45,7 +46,7 @@ hera = ExecFamily(
                 EntityKinds.RUN_HERA_PIPELINE, RunHeraRun, RunSpecHeraRun, RunStatusHeraRun, base=RunBuilder
             ),
         ),
-        Actions.BUILD: Action(
+        ExecutableActions.BUILD: Action(
             task=BuilderDef(EntityKinds.TASK_HERA_BUILD, Task, TaskSpecWorkflow, Status, base=TaskBuilder),
             run=BuilderDef(EntityKinds.RUN_HERA_BUILD, RunHeraRun, RunSpecHeraRun, RunStatusHeraRun, base=RunBuilder),
         ),
